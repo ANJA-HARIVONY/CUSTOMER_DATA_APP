@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Customer Data App
 
 This app is used to showcase and edit tabular data live in an app. It links up with a persistent database, such as [Neon](https://neon.tech). 
@@ -55,3 +56,7 @@ export DB_URL="postgresql+psycopg://appuser:mysecretpassword@localhost:5432/myda
 
 After configuring a different database, execute `reflex db migrate` to populate
 it with the latest schema before running the app.
+=======
+# CUSTOMER_DATA_APP
+ATENCION AL CLIENTE MALABO
+>>>>>>> 715d77006e1fe6d89b834a2cb1b0e52cec58f1d1
