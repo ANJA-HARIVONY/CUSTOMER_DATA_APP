@@ -1,5 +1,5 @@
 import reflex as rx
-
+from ..backend.backend import State
 
 def navbar():
     return rx.flex(
@@ -29,18 +29,29 @@ def navbar():
 
 def footer():
     return rx.flex(
-        rx.text("© 2025 CONEXXIA - Atención al cliente - ",
+        rx.text("© 2025 CONEXXIA - Atención al cliente",
                 font_size="0.8em",
                 ),
                 rx.link(
-                    "ANJA-HARIVONY",
-                    href="https://www.linkedin.com/in/anja-harivony/",
+                    "ANJA-HARIVONY - 222 304 981",
+                    mailto="jefe.incidencias@conexxiaeg.com",
                     color="white",
                     font_size="0.8em",
                     font_style="italic",
                     text_decoration="underline",
                 ),
+        rx.link(
+                rx.hstack(
+                    rx.icon("download"),
+                    rx.text("Exportar en CSV", display=["none", "none", "block"]),
+                    on_click=[State.download_csv_data, rx.toast.success("CSV exportado correctamente")],
+                    size="2",
+                    text_decoration="none",
+                ),
+            ),
         align="center",
+        direction="column",
+        spacing="2",
         width="100%",
         padding_bottom="1em",
         justify="center",

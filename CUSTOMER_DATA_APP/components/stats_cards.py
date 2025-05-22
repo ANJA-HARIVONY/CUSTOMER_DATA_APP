@@ -6,7 +6,10 @@ from reflex.components.radix.themes.base import (
 from ..backend.backend import State
 
 
+
+
 def _arrow_badge(arrow_icon: str, percentage_change: float, arrow_color: str):
+    """Create an arrow badge with percentage change."""
     return rx.badge(
         rx.icon(
             tag=arrow_icon,
@@ -29,10 +32,12 @@ def stats_card(
     value: int,
     prev_value: int,
     percentage_change: float,
+    total_value: int,
     icon: str,
     icon_color: LiteralAccentColor,
     extra_char: str = "",
 ) -> rx.Component:
+    """Create a statistics card component."""
     return rx.card(
         rx.hstack(
             rx.vstack(
@@ -62,15 +67,21 @@ def stats_card(
                 ),
                 rx.hstack(
                     rx.heading(
-                        f"{extra_char}{value}",
+                        f"{total_value}",
                         size="7",
                         weight="bold",
                     ),
                     rx.text(
-                        f"from {extra_char}{prev_value}",
+                        f"desde {extra_char}{prev_value}",
                         size="3",
                         color=rx.color("gray", 10),
                     ),
+                    rx.text(
+                       f"Parcial: {extra_char}{value}",
+                        size="3",
+                        color=rx.color("gray", 10),
+                    ),
+
                     spacing="2",
                     align_items="end",
                 ),
@@ -89,38 +100,43 @@ def stats_card(
 
 
 def stats_cards_group() -> rx.Component:
+    """Create a group of statistics cards."""
     return rx.flex(
         stats_card(
             "Total Incidencias",
-            State.current_month_values.num_incidencias,
-            State.previous_month_values.num_incidencias,
-            State.incidencias_change,
-            "users",
-            "blue",
+            value=State.current_month_values.num_incidencias,
+            prev_value=State.previous_month_values.num_incidencias,
+            percentage_change=State.incidencias_change,
+            icon="users",
+            icon_color="blue",
+            total_value=State.total_incidencias,
         ),
         stats_card(
             "Total Pendientes",
-            State.current_month_values.num_pendientes,
-            State.previous_month_values.num_pendientes,
-            State.incidencias_pendientes_change,
-            "circle-alert",
-            "orange",
+            value=State.current_month_values.num_pendientes,
+            prev_value=State.previous_month_values.num_pendientes,
+            percentage_change=State.incidencias_pendientes_change,
+            icon="circle-alert",
+            icon_color="orange",
+            total_value=State.total_pendientes,
         ),
         stats_card(
             "Total Solucionadas",
-            State.current_month_values.num_solucionadas,
-            State.previous_month_values.num_solucionadas,
-            State.delivers_change,
-            "circle-check-big",
-            "green",
+            value=State.current_month_values.num_solucionadas,
+            prev_value=State.previous_month_values.num_solucionadas,
+            percentage_change=State.delivers_change,
+            icon="circle-check-big",
+            icon_color="green",
+            total_value=State.total_solucionadas,
         ),
         stats_card(
             "Total Bitrix",
-            State.current_month_values.num_bitrix,
-            State.previous_month_values.num_bitrix,
-            State.incidencias_bitrix_change,
-            "wrench",
-            "orange",
+            value=State.current_month_values.num_bitrix,
+            prev_value=State.previous_month_values.num_bitrix,
+            percentage_change=State.incidencias_bitrix_change,
+            icon="wrench",
+            icon_color="orange",
+            total_value=State.total_bitrix,
         ),
         spacing="5",
         width="100%",

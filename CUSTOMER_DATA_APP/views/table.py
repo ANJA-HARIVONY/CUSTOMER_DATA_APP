@@ -5,6 +5,7 @@ from ..components.form_field import form_field
 from ..components.status_badges import status_badge
 
 
+
 def show_incidencia(user: Incidencia):
     """Show a customer in a table row."""
     return rx.table.row(
@@ -93,6 +94,12 @@ def add_customer_button() -> rx.Component:
                             "Motivo", "Motivo de la incidencia", "text", "motivo", "pen"
                         ),
                         # Usuario
+                        rx.hstack(
+                            rx.icon("user-round-pen", size=16, stroke_width=1.5),
+                            rx.text("Usuario"),
+                            align="center",
+                            spacing="2",
+                        ),
                         rx.select(
                             ["Esther", "Juanita", "Restituta", "Estelina", "Anja", "Crecensia"],
                             name="usuario",
@@ -234,6 +241,12 @@ def update_incidencia_dialog(user):
                             user.motivo,
                         ),
                         # Usuario
+                        rx.hstack(
+                            rx.icon("user-round-pen", size=16, stroke_width=1.5),
+                            rx.text("Usuario"),
+                            align="center",
+                            spacing="2",
+                        ),
                         rx.select(
                             ["Esther", "Juanita", "Restituta", "Estelina", "Anja", "Crecensia"],
                             name="usuario",
@@ -325,31 +338,6 @@ def delete_incidencia_dialog(user):
     )
 
 
-def upload_csv_dialog() -> rx.Component:
-    """Upload a CSV file to the database."""
-    return rx.dialog.root(
-        rx.dialog.trigger(rx.button("Importar incidencias", color_scheme="green", size="3", variant="solid")),
-        rx.dialog.content(
-            rx.dialog.title("Importar incidencias"),
-            rx.dialog.description(
-            "Importe las incidencias desde un archivo CSV",
-                rx.upload( 
-                    accept=".csv",
-                    icon="upload",
-                    multiple=False,
-                ),
-            ),
-            rx.dialog.close(
-                rx.button(
-                    "Cerrar",
-                    size="3",
-                    on_click=lambda: State.handle_upload(State.uploaded_files),
-                ),
-            ),
-        ),
-    )
-
-
 def _header_cell(text: str, icon: str):
     """Show a header cell in the table."""
     return rx.table.column_header_cell(
@@ -366,22 +354,6 @@ def main_table():
     return rx.fragment(
         rx.flex(
             add_customer_button(),
-            # rx.button(
-            #     rx.icon("upload", size=22),
-            #     rx.text("Descargar base de datos", size="4", display=["none", "none", "block"]),
-            #     on_click=rx.download("/db.sqlite"),
-            #     color_scheme="green",
-            #     size="3",
-            #     variant="solid",
-            # ),
-            rx.button(
-                rx.icon("download", size=22),
-                rx.text("Exportar en CSV", size="4", display=["none", "none", "block"]),
-                on_click=[State.download_csv_data, rx.toast.success("CSV exportado correctamente")],
-                color_scheme="blue",
-                size="3",
-                variant="solid",
-            ),
             rx.spacer(),
             rx.cond(
                 State.sort_reverse,
@@ -404,7 +376,7 @@ def main_table():
                 ["name", "phone", "address", "motivo", "usuario", "date", "status"],
                 placeholder="Ordenar por: Nombre",
                 size="3",
-                on_change=lambda sort_value: State.sort_values(sort_value),
+                on_change=State.set_sort_value,
             ),
             rx.input(
                 rx.input.slot(rx.icon("search")),
@@ -413,7 +385,7 @@ def main_table():
                 max_width="225px",
                 width="100%",
                 variant="surface",
-                on_change=lambda value: State.filter_values(value),
+                on_change=State.set_filter_value,
             ),
             justify="end",
             align="center",
@@ -436,26 +408,61 @@ def main_table():
                     _header_cell("Acciones", "cog"),    
                 ),
             ),
-            rx.table.body(rx.foreach(State.incidencias, show_incidencia)),
+            rx.table.body(rx.foreach(State.get_current_page, show_incidencia)),
             variant="surface",
             size="3",
             width="100%",
             on_mount=State.load_entries,
         ),
-        rx.spacer(
-        ),
-        rx.hstack(
-            rx.button("Anterior", on_click=State.prev_page),
-            rx.text(f"Página {State.page_number} / {State.total_pages}"),
-            rx.button("Siguiente", on_click=State.next_page),
-            width="100%",
-            justify="center",
-            align="center",
-            spacing="3",
-            padding_bottom="1em",
-            padding_top="1em",
-            margin_bottom="1em",
-            margin_top="1em",
-        ),
+        rx.spacer(),
+        _pagination_view(),
     )
 
+def _pagination_view() -> rx.Component:
+    """Create the pagination view."""
+    return rx.hstack(
+        rx.text(
+            "Página ",
+            rx.code(State.page_number),
+            f" de {State.total_pages}",
+            justify="end",
+        ),
+        rx.hstack(
+            rx.icon_button(
+                rx.icon("chevrons-left", size=18),
+                on_click=State.first_page,
+                opacity=rx.cond(State.page_number == 1, 0.6, 1),
+                color_scheme=rx.cond(State.page_number == 1, "gray", "accent"),
+                variant="soft",
+            ),
+            rx.icon_button(
+                rx.icon("chevron-left", size=18),
+                on_click=State.prev_page,
+                opacity=rx.cond(State.page_number == 1, 0.6, 1),
+                color_scheme=rx.cond(State.page_number == 1, "gray", "accent"),
+                variant="soft",
+            ),
+            rx.icon_button(
+                rx.icon("chevron-right", size=18),
+                on_click=State.next_page,
+                opacity=rx.cond(State.page_number == State.total_pages, 0.6, 1),
+                color_scheme=rx.cond(State.page_number == State.total_pages, "gray", "accent"),
+                variant="soft",
+            ),
+            rx.icon_button(
+                rx.icon("chevrons-right", size=18),
+                on_click=State.last_page,
+                opacity=rx.cond(State.page_number == State.total_pages, 0.6, 1),
+                color_scheme=rx.cond(State.page_number == State.total_pages, "gray", "accent"),
+                variant="soft",
+            ),
+            align="center",
+            spacing="2",
+            justify="end",
+        ),
+        spacing="5",
+        margin_top="1em",
+        align="center",
+        width="100%",
+        justify="end",
+    )
