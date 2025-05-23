@@ -4,10 +4,9 @@ from .components.stats_cards import stats_cards_group
 from .views.navbar import navbar, footer
 from .views.table import main_table
 from .backend.backend import State, Incidencia
-from .pages.data_page import datos_page
-from .pages.services_page import services_page
 from .pages.ayuda_page import ayuda_page
-
+from .pages.services_page import services_page
+from .pages.data_page import datos_page
 
 @rx.page(route="/", title="Atención al cliente", description="Aplicación para la atención al cliente.")
 def index() -> rx.Component:
@@ -44,6 +43,7 @@ def datos() -> rx.Component:
         spacing="6",
         padding_x=["1.5em", "1.5em", "3em"],
     )
+
 
 @rx.page(route="/ayuda", title="Ayuda", description="Ayuda de la aplicación.")
 def ayuda() -> rx.Component:

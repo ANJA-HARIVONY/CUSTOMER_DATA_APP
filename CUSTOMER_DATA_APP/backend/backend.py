@@ -318,3 +318,60 @@ class State(rx.State):
             "Données actualisées",
             position="bottom-right"
         )
+
+    # Nouvelles méthodes pour la page de services
+    @rx.event
+    def filter_by_status(self, status: str):
+        """Filter incidencias by status."""
+        if status == "Tous":
+            self.search_value = ""
+        else:
+            self.search_value = status
+        self.load_entries()
+
+    @rx.event
+    def filter_by_user(self, user: str):
+        """Filter incidencias by user."""
+        if user == "Tous":
+            self.search_value = ""
+        else:
+            self.search_value = user
+        self.load_entries()
+
+    @rx.event
+    def filter_by_date(self, period: str):
+        """Filter incidencias by date period."""
+        from datetime import datetime, timedelta
+        
+        if period == "Toutes":
+            self.search_value = ""
+        elif period == "Aujourd'hui":
+            today = datetime.now().strftime("%Y-%m-%d")
+            self.search_value = today
+        elif period == "Cette semaine":
+            # Get current week start
+            today = datetime.now()
+            start_week = today - timedelta(days=today.weekday())
+            self.search_value = start_week.strftime("%Y-%m-%d")
+        elif period == "Ce mois":
+            # Get current month start
+            today = datetime.now()
+            start_month = datetime(today.year, today.month, 1)
+            self.search_value = start_month.strftime("%Y-%m-%d")
+        elif period == "Cette année":
+            # Get current year start
+            today = datetime.now()
+            start_year = datetime(today.year, 1, 1)
+            self.search_value = start_year.strftime("%Y-%m-%d")
+        
+        self.load_entries()
+
+    @rx.event
+    def reset_filters(self):
+        """Reset all filters."""
+        self.search_value = ""
+        self.sort_value = ""
+        self.sort_reverse = False
+        self.offset = 0
+        self.load_entries()
+        return rx.toast.info("Filtres réinitialisés", position="bottom-right")
