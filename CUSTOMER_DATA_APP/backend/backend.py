@@ -36,6 +36,8 @@ class State(rx.State):
     current_month_values: MonthValues = MonthValues()
     previous_month_values: MonthValues = MonthValues()
 
+    columns: list[str] = ["name","address", "motivo", "usuario", "date", "status", "bitrix"]
+
 
     # -- Debut des fonctions responsables de la pagination --
     @rx.var(cache=True)

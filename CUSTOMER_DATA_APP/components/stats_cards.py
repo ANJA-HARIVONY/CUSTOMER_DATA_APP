@@ -96,6 +96,8 @@ def stats_card(
         size="3",
         width="100%",
         max_width="22rem",
+        transition="all 0.2s",
+        _hover={"transform": "scale(1.1)"},
     )
 
 

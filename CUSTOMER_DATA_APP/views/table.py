@@ -44,6 +44,9 @@ def add_customer_button() -> rx.Component:
                 rx.icon("plus", size=26),
                 rx.text("Agregar nuevo incidencia", size="4", display=["none", "none", "block"]),
                 size="3",
+                transition="all 0.2s",
+                _hover={"transform": "scale(1.1)"},
+                cursor="pointer",
             ),
         ),
         rx.dialog.content(
@@ -138,11 +141,20 @@ def add_customer_button() -> rx.Component:
                                 "Cancelar",
                                 variant="soft",
                                 color_scheme="gray",
+                                transition="all 0.2s",
+                                _hover={"transform": "scale(1.1)"},
+                                cursor="pointer",
                             ),
                         ),
                         rx.form.submit(
                             rx.dialog.close(
-                                rx.button("Agregar incidencia"),
+                                rx.button("Agregar incidencia",
+                                color_scheme="green",
+                                variant="solid",
+                                ),
+                                transition="all 0.2s",
+                                _hover={"transform": "scale(1.1)"},
+                                cursor="pointer",
                             ),
                             as_child=True,
                         ),
@@ -176,6 +188,9 @@ def update_incidencia_dialog(user):
                 size="2",
                 variant="solid",
                 on_click=lambda: State.get_incidencia(user),
+                transition="all 0.2s",
+                _hover={"transform": "scale(1.1)"},
+                cursor="pointer",
             ),
         ),
         rx.dialog.content(
@@ -287,11 +302,20 @@ def update_incidencia_dialog(user):
                                 "Cancel",
                                 variant="soft",
                                 color_scheme="gray",
+                                transition="all 0.2s",
+                                _hover={"transform": "scale(1.1)"},
+                                cursor="pointer",
                             ),
                         ),
                         rx.form.submit(
                             rx.dialog.close(
-                                rx.button("Actualizar incidencia"),
+                                rx.button("Actualizar incidencia",
+                                color_scheme="green",
+                                variant="solid",
+                                transition="all 0.2s",
+                                _hover={"transform": "scale(1.1)"},
+                                cursor="pointer",
+                                ),
                             ),
                             as_child=True,
                         ),
@@ -318,7 +342,9 @@ def delete_incidencia_dialog(user):
     """Delete a customer from the database."""
     return rx.dialog.root(
         rx.dialog.trigger(
-            rx.button(rx.icon("trash-2", size=22), color_scheme="red", size="2", variant="solid"),
+            rx.button(rx.icon("trash-2", size=22), color_scheme="red", size="2", variant="solid",                transition="all 0.2s",
+                _hover={"transform": "scale(1.1)"},
+                cursor="pointer",),
         ),
         rx.dialog.content(
             rx.hstack(
@@ -354,6 +380,7 @@ def main_table():
     return rx.fragment(
         rx.flex(
             add_customer_button(),
+            export_csv_button(),
             rx.spacer(),
             rx.cond(
                 State.sort_reverse,
@@ -415,8 +442,28 @@ def main_table():
             on_mount=State.load_entries,
         ),
         rx.spacer(),
+        rx.hstack(
         _pagination_view(),
+        ),
     )
+
+def export_csv_button():
+    return rx.link(
+                rx.hstack(
+                    rx.icon("download"),
+                    #rx.text("Exportar en CSV", display=["none", "none", "block"]),
+                    on_click=[State.download_csv_data, rx.toast.success("CSV exportado correctamente")],
+                    size="2",
+                    text_decoration="none",
+                    justify="center",
+                    align="center",
+                    spacing="2",
+                    transition="all 0.2s",
+                    _hover={"transform": "scale(1.1)"},
+                    cursor="pointer",
+                ),
+            ),
+        
 
 def _pagination_view() -> rx.Component:
     """Create the pagination view."""
